@@ -7,9 +7,6 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.docstore.document import Document
 from app.retriever import fetch_reddit_posts, fetch_news_articles, fetch_yahoo_finance_data, fetch_twitter_finance_mock
 
-# Optional: load from a folder or use a loader
-from app.retriever import fetch_reddit_posts, fetch_news_articles
-
 VECTORSTORE_PATH = "data/faiss_index"
 
 def load_data():
