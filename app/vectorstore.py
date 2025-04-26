@@ -5,7 +5,7 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.document_loaders import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.docstore.document import Document
-from app.retriever import fetch_reddit_posts, fetch_news_articles
+from app.retriever import fetch_reddit_posts, fetch_news_articles, fetch_yahoo_finance_data, fetch_twitter_finance_mock
 
 # Optional: load from a folder or use a loader
 from app.retriever import fetch_reddit_posts, fetch_news_articles
@@ -15,8 +15,10 @@ VECTORSTORE_PATH = "data/faiss_index"
 def load_data():
     reddit_docs = fetch_reddit_posts()
     news_docs = fetch_news_articles()
-    combined = reddit_docs + news_docs
+    yahoo_docs = fetch_yahoo_finance_data()
+    twitter_docs = fetch_twitter_finance_mock()
 
+    combined = reddit_docs + news_docs + yahoo_docs + twitter_docs
     return [Document(page_content=doc) for doc in combined]
 
 def get_vectorstore():
