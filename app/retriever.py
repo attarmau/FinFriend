@@ -1,5 +1,7 @@
 import requests
 import os
+import yfinance as yf
+from datetime import datetime, timedelta
 
 REDDIT_HEADERS = {"User-Agent": "finfriend-bot"}
 NEWSAPI_KEY = os.getenv("NEWS_API_KEY")
@@ -15,3 +17,9 @@ def fetch_news_articles(query="stocks", page_size=5):
     res = requests.get(url)
     articles = res.json()["articles"]
     return [a["title"] + "\n" + a["description"] for a in articles if a["description"]]
+
+def fetch_yahoo_finance_data(ticker="AAPL", days=3):
+    end = datetime.today()
+    start = end - timedelta(days=days)
+    df = yf.download(ticker, start=start, end=end)
+    return [f"{ticker} | {row.name.date()} | Open: {row.Open}, Close: {row.Close}" for _, row in df.iterrows()]
