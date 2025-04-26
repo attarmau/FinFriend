@@ -1,10 +1,11 @@
-import requests
 import os
+import requests
 import yfinance as yf
 from datetime import datetime, timedelta
+import streamlit as st
 
 REDDIT_HEADERS = {"User-Agent": "finfriend-bot"}
-NEWSAPI_KEY = os.getenv("NEWS_API_KEY")
+NEWSAPI_KEY = st.secrets["NEWS_API_KEY"]
 
 def fetch_reddit_posts(subreddit="investing", limit=5):
     url = f"https://www.reddit.com/r/{subreddit}/hot.json?limit={limit}"
