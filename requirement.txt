@@ -1,0 +1,9 @@
+langchain==0.1.13
+openai==1.17.0
+faiss-cpu==1.7.4
+python-dotenv==1.0.1
+requests==2.31.0
+streamlit==1.33.0
+tiktoken==0.6.0
+# fastapi==0.110.1
+# uvicorn==0.29.0
