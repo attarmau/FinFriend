@@ -21,11 +21,9 @@ def load_data():
 
 def get_vectorstore():
     if os.path.exists(VECTORSTORE_PATH):
-        # Load the existing FAISS index
         print("Loading FAISS index from disk...")
         vectorstore = FAISS.load_local(VECTORSTORE_PATH, OpenAIEmbeddings())
     else:
-        # Rebuild index
         print("Rebuilding FAISS index...")
         docs = load_data()
         splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
@@ -33,7 +31,6 @@ def get_vectorstore():
 
         embeddings = OpenAIEmbeddings()
         vectorstore = FAISS.from_documents(chunks, embeddings)
-        # Save the index to disk
         vectorstore.save_local(VECTORSTORE_PATH)
 
     return vectorstore
