@@ -25,7 +25,9 @@ finfriend-rag-bot/
 │   ├── retriever.py         
 │   ├── summarizer.py          
 │   ├── vectorstore.py         
-│   └── prompts.py             
+│   └── prompts.py
+├── .streamlit/                 
+│   └── config.toml   
 │
 ├── data/
 │   └── sources/               
