@@ -1,6 +1,5 @@
 langchain==0.1.14
 openai==1.17.0
-faiss-cpu==1.7.4
 requests==2.31.0
 streamlit==1.33.0
 tiktoken==0.6.0
