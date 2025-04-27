@@ -7,9 +7,7 @@ from app.retriever import fetch_reddit_posts, fetch_news_articles, fetch_yahoo_f
 import streamlit as st
 
 VECTORSTORE_PATH = "data/chroma_db"
-
-# Fetch OpenAI API key from Streamlit secrets
-OPENAI_API_KEY = st.secrets.get("OPENAI_API_KEY")  # Make sure this is correctly set in your Streamlit secrets
+OPENAI_API_KEY = st.secrets.get("OPENAI_API_KEY")  
 
 def load_data():
     reddit_docs = fetch_reddit_posts(subreddit="investing", limit=5)
