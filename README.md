@@ -35,4 +35,9 @@ https://medium.com/@sakhamurijaikar/which-vector-database-is-right-for-your-gene
 Vector database intro image source: https://www.trantorinc.com/blog/pinecone-ai-guide
 
 
-This project demonstrates an efficient approach to building a scalable, data-driven proof of concept (POC) for a RAG-based chatbot. By integrating advanced technologies like LangChain, Pinecone, and Streamlit, it enables the rapid development of an interactive, real-time chatbot capable of delivering accurate financial insights. This setup provides a streamlined framework for others to quickly prototype and deploy similar applications, ensuring effective handling of diverse data sources and fast document retrieval.
+This project demonstrates an efficient approach to building a scalable, data-driven proof of concept (POC) for a RAG-based chatbot. By integrating advanced technologies like LangChain, Pinecone, and Streamlit, it enables the rapid development of an interactive, real-time chatbot capable of delivering accurate financial insights. 
+
+This setup provides a streamlined framework for others to quickly prototype and deploy similar applications. More techniques anout Chatbot + RAG can refer to these links:
+- https://medium.com/credera-engineering/build-a-simple-rag-chatbot-with-langchain-b96b233e1b2a
+- https://botpress.com/blog/build-rag-chatbot
+- https://github.com/umbertogriffo/rag-chatbot
