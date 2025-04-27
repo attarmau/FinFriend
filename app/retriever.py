@@ -52,21 +52,34 @@ def choose_ticker(user_question):
 
 def fetch_reddit_posts(subreddit="investing", limit=5):
     if not REDDIT_CLIENT_ID or not REDDIT_CLIENT_SECRET:
-        raise ValueError("Missing REDDIT_CLIENT_ID or REDDIT_SECRET in secrets.toml.")
+        raise ValueError("Missing REDDIT_CLIENT_ID or REDDIT_CLIENT_SECRET in secrets.toml.")
     
     auth = requests.auth.HTTPBasicAuth(REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET)
     data = {"grant_type": "client_credentials"}
     headers = {"User-Agent": REDDIT_USER_AGENT}
     
-    token_res = fetch_with_retry("https://www.reddit.com/api/v1/access_token", retries=3, headers=headers, data=data, auth=auth)
-    token = token_res.json().get("access_token")
-    headers["Authorization"] = f"bearer {token}"  
-    url = f"https://oauth.reddit.com/r/{subreddit}/hot?limit={limit}"
-    
-    res = fetch_with_retry(url, retries=3, headers=headers)
-    posts = res.json().get("data", {}).get("children", [])
+    try:
+        token_res = requests.post("https://www.reddit.com/api/v1/access_token", auth=auth, data=data, headers=headers)
+        token_res.raise_for_status() 
+        token = token_res.json().get("access_token")
+        headers["Authorization"] = f"bearer {token}"  
+    except requests.exceptions.HTTPError as err:
+        print(f"HTTP error occurred: {err}")  
+        raise Exception(f"Failed to get Reddit token: {err}")
+    except Exception as e:
+        print(f"Error occurred: {e}")
+        raise Exception(f"Failed to get Reddit token: {e}")
+
+    try:
+        url = f"https://oauth.reddit.com/r/{subreddit}/hot?limit={limit}"
+        res = fetch_with_retry(url, retries=3, headers=headers)
+        posts = res.json().get("data", {}).get("children", [])
+    except Exception as e:
+        print(f"Error fetching Reddit posts: {e}")
+        raise Exception(f"Error fetching Reddit posts: {e}")
     
     return [f"[Reddit] {p['data']['title']}\n{p['data']['selftext']}" for p in posts]
+
 
 def fetch_news_articles(query="stocks", page_size=5):
     if not NEWSAPI_KEY:
