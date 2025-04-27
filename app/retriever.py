@@ -5,9 +5,12 @@ from datetime import datetime, timedelta
 import streamlit as st
 import tweepy
 
-REDDIT_USER_AGENT = "finfriend-bot/1.0 (by u/Imaginary-Weird-7959)"
+REDDIT_CLIENT_ID = st.secrets.get("REDDIT_CLIENT_ID")
+REDDIT_CLIENT_SECRET = st.secrets.get("REDDIT_SECRET")
 NEWSAPI_KEY = st.secrets.get("NEWS_API_KEY")
 TWITTER_BEARER_TOKEN = st.secrets.get("TWITTER_BEARER_TOKEN")
+
+REDDIT_USER_AGENT = "finfriend-bot/1.0 (by u/Imaginary-Weird-7959)"
 
 def fetch_reddit_posts(subreddit="investing", limit=5):
     if not REDDIT_CLIENT_ID or not REDDIT_CLIENT_SECRET:
