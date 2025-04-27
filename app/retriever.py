@@ -44,8 +44,9 @@ def fetch_twitter_finance_posts(query="finance OR stock market OR bitcoin OR inv
         raise ValueError("Missing TWITTER_BEARER_TOKEN in secrets.toml or environment variables.")
     
     client = tweepy.Client(bearer_token=TWITTER_BEARER_TOKEN)
-
+    
     tweets = client.search_recent_tweets(query=query + " -is:retweet lang:en", max_results=max_results)
+    
     if not tweets.data:
         return []
 
