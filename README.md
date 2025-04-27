@@ -1,7 +1,7 @@
 # FinFriend: Your Financial Chatbot
 A chatbot that serves up daily bites of financial gossip and trending market talk. It pulls the juiciest stuff from Reddit, Twitter, and news sites, then breaks it all down using LangChain with a RAG setup, with Pinecone/FAISS search and a Streamlit or Next.js frontend
 
-[Watch the video]([https://link-to-your-video.mov](https://drive.google.com/file/d/1lPkZRoE-8V9RxH6ZQ-k5GdkFIZhh8_ow/view?usp=sharing))
+[Watch the video]([https://link-to-your-video.mov](https://drive.google.com/file/d/1lPkZRoE-8V9RxH6ZQ-k5GdkFIZhh8_ow/view?usp=sharing)
 
 ## Scenario
 ### 📰 Daily Market Briefings:
