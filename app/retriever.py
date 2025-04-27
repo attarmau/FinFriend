@@ -22,7 +22,7 @@ def fetch_reddit_posts(subreddit="investing", limit=5):
     token_res = requests.post("https://www.reddit.com/api/v1/access_token", auth=auth, data=data, headers=headers)
     if token_res.status_code != 200:
         raise Exception(f"Failed to get Reddit token: {token_res.status_code}")
-      token = token_res.json()["access_token"]
+    token = token_res.json()["access_token"]
     
     headers["Authorization"] = f"bearer {token}"
     url = f"https://oauth.reddit.com/r/{subreddit}/hot?limit={limit}"
