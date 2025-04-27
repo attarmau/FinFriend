@@ -59,11 +59,13 @@ def fetch_news_articles(query="stocks", page_size=5):
 def fetch_yahoo_finance_data(ticker, days=5):
     end = datetime.today()
     start = end - timedelta(days=days + 2)
-    df = yf.download(ticker, start=start, end=end, progress=False)
+    yf_ticker = ticker.replace("^", "%5E") if ticker.startswith("^") else ticker
+    
+    df = yf.download(yf_ticker, start=start, end=end, progress=False, auto_adjust=True)
     
     if df.empty:
-        raise Exception(f"No Yahoo Finance data found for {ticker}.")
-    
+        return [] 
+
     return [
         f"[Yahoo Finance] {ticker} | {row.name.date()} | Open: {row.Open:.2f}, Close: {row.Close:.2f}"
         for _, row in df.iterrows()
