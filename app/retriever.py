@@ -45,7 +45,7 @@ def fetch_news_articles(query="stocks", page_size=5):
 
 def fetch_yahoo_finance_data(ticker="AAPL", days=5):
     end = datetime.today()
-    start = end - timedelta(days=days + 2))
+    start = end - timedelta(days=days + 2)
     df = yf.download(ticker, start=start, end=end, progress=False)
     if df.empty:
         raise Exception(f"No Yahoo Finance data found for {ticker}.")
