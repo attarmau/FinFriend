@@ -15,27 +15,3 @@ Finds what people are talking about most (tickers, ETFs, sectors) based on keywo
 ### 🤔 Ask Me Anything (with receipts):
 "What’s the sentiment on NVDA this week?"
 RAG pulls Reddit threads + news snippets and lets the LLM answer with a reference trail
-
-## Folder Structure
-```
-finfriend-rag-bot/
-├── app/
-│   ├── main.py             
-│   ├── chat_engine.py         # Core LangChain RAG logic
-│   ├── retriever.py         
-│   ├── summarizer.py          
-│   ├── vectorstore.py         
-│   └── prompts.py
-├── .streamlit/                 
-│   └── config.toml   
-│
-├── data/
-│   └── sources/               
-│
-├── scripts/
-│   └── fetch_data.py          # Scraper: Reddit, NewsAPI, Twitter
-│
-├── requirements.txt
-├── README.md
-└── .env                       
-```
