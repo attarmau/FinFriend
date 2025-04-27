@@ -13,12 +13,14 @@ TWITTER_BEARER_TOKEN = st.secrets.get("TWITTER_BEARER_TOKEN")
 
 REDDIT_USER_AGENT = "finfriend-bot/1.0 (by u/Imaginary-Weird-7959)"
 
-def fetch_with_retry(url, retries=5, backoff_factor=2, headers=None, data=None, auth=None):
+def fetch_with_retry(url, retries=3, backoff_factor=2, headers=None, data=None, auth=None):
     attempt = 0
     while attempt < retries:
         try:
             response = requests.get(url, headers=headers, data=data, auth=auth)
+            print(f"Attempt {attempt + 1}: URL: {url} | Status Code: {response.status_code}")
             if response.status_code == 429:  
+                print(f"Rate limit exceeded. Retrying... (Attempt {attempt + 1})")
                 raise Exception("Rate limit exceeded. Retrying...")
             response.raise_for_status() 
             return response
@@ -26,11 +28,12 @@ def fetch_with_retry(url, retries=5, backoff_factor=2, headers=None, data=None, 
             attempt += 1
             print(f"Attempt {attempt} failed: {e}")
             if attempt < retries:
-                backoff_time = backoff_factor ** attempt  
+                backoff_time = backoff_factor ** attempt 
                 print(f"Retrying in {backoff_time} seconds...")
                 time.sleep(backoff_time)
             else:
-                raise Exception(f"All {retries} retry attempts failed.")
+                print(f"All {retries} retry attempts failed for URL: {url}")
+                raise Exception(f"All {retries} retry attempts failed. Last error: {e}")
 
 def choose_ticker(user_question):
     question = user_question.lower()
@@ -43,7 +46,7 @@ def choose_ticker(user_question):
     elif "amazon" in question or "amzn" in question:
         return "AMZN"
     elif "inflation" in question or "economy" in question:
-        return "^GSPC"  
+        return "^GSPC" 
     else:
         return None
 
@@ -82,17 +85,16 @@ def fetch_yahoo_finance_data(ticker, days=5):
     
     try:
         df = yf.download(yf_ticker, start=start, end=end, progress=False, auto_adjust=True)
+        if df.empty:
+            print(f"No data found for {ticker}.")
+            return []
+        return [
+            f"[Yahoo Finance] {ticker} | {row.name.date()} | Open: {row.Open:.2f}, Close: {row.Close:.2f}"
+            for _, row in df.iterrows()
+        ]
     except Exception as e:
         print(f"Error fetching Yahoo Finance data: {e}")
         return []
-    
-    if df.empty:
-        return [] 
-
-    return [
-        f"[Yahoo Finance] {ticker} | {row.name.date()} | Open: {row.Open:.2f}, Close: {row.Close:.2f}"
-        for _, row in df.iterrows()
-    ]
 
 def fetch_twitter_finance_posts(query="finance OR stock market OR bitcoin OR investment", max_results=10):
     if not TWITTER_BEARER_TOKEN:
