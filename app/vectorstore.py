@@ -1,5 +1,4 @@
 import os
-import faiss
 from langchain.vectorstores import Chroma
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.document_loaders import TextLoader
