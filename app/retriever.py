@@ -10,10 +10,22 @@ NEWSAPI_KEY = st.secrets.get("NEWS_API_KEY")
 TWITTER_BEARER_TOKEN = st.secrets.get("TWITTER_BEARER_TOKEN")
 
 def fetch_reddit_posts(subreddit="investing", limit=5):
-    url = f"https://www.reddit.com/r/{subreddit}/hot.json?limit={limit}"
-    res = requests.get(url, headers=REDDIT_HEADERS)
+    if not REDDIT_CLIENT_ID or not REDDIT_CLIENT_SECRET:
+        raise ValueError("Missing REDDIT_CLIENT_ID or REDDIT_SECRET in secrets.toml.")
+    
+    auth = requests.auth.HTTPBasicAuth(REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET)
+    data = {"grant_type": "client_credentials"}
+    headers = {"User-Agent": REDDIT_USER_AGENT}  
+    token_res = requests.post("https://www.reddit.com/api/v1/access_token", auth=auth, data=data, headers=headers)
+     if token_res.status_code != 200:
+        raise Exception(f"Failed to get Reddit token: {token_res.status_code}")
+      token = token_res.json()["access_token"]
+    
+    headers["Authorization"] = f"bearer {token}"
+    url = f"https://oauth.reddit.com/r/{subreddit}/hot?limit={limit}"
+    res = requests.get(url, headers=headers)
     if res.status_code != 200:
-        raise Exception(f"Failed to fetch Reddit posts: {res.status_code}")
+        raise Exception(f"Failed to fetch Reddit posts: {res.status_code}")   
     posts = res.json()["data"]["children"]
     return [f"[Reddit] {p['data']['title']}\n{p['data']['selftext']}" for p in posts]
 
