@@ -1,18 +1,17 @@
 import os
 from langchain.vectorstores import Chroma
 from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.document_loaders import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.docstore.document import Document
-from app.retriever import fetch_reddit_posts, fetch_news_articles, fetch_yahoo_finance_data, fetch_twitter_finance_mock
+from app.retriever import fetch_reddit_posts, fetch_news_articles, fetch_yahoo_finance_data, fetch_twitter_finance_posts
 
 VECTORSTORE_PATH = "data/chroma_db"
 
 def load_data():
-    reddit_docs = fetch_reddit_posts()
-    news_docs = fetch_news_articles()
-    yahoo_docs = fetch_yahoo_finance_data()
-    twitter_docs = fetch_twitter_finance_mock()
+    reddit_docs = fetch_reddit_posts(subreddit="investing", limit=5)
+    news_docs = fetch_news_articles(query="stocks", page_size=5)
+    yahoo_docs = fetch_yahoo_finance_data(ticker="AAPL", days=3)
+    twitter_docs = fetch_twitter_finance_posts(query="finance OR stock market OR bitcoin OR investment", max_results=10)
 
     combined = reddit_docs + news_docs + yahoo_docs + twitter_docs
     return [Document(page_content=doc) for doc in combined]
