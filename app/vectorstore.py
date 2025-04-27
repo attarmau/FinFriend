@@ -21,7 +21,7 @@ def load_data():
 def get_vectorstore():
     if os.path.exists(VECTORSTORE_PATH):
         print("Loading Chroma DB from disk...")
-        embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)  
+        embeddings = OpenAIEmbeddings()  
         vectorstore = Chroma(persist_directory=VECTORSTORE_PATH, embedding_function=embeddings)
     else:
         print("Rebuilding Chroma DB...")
@@ -29,7 +29,7 @@ def get_vectorstore():
         splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
         chunks = splitter.split_documents(docs)
 
-        embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY) 
+        embeddings = OpenAIEmbeddings() 
         vectorstore = Chroma.from_documents(documents=chunks, embedding=embeddings, persist_directory=VECTORSTORE_PATH)
         vectorstore.persist()
 
