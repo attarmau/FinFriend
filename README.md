@@ -3,7 +3,7 @@ A chatbot that aggregates financial news, Reddit posts, and Twitter updates, pow
 
 ✋🏻 The functional UI is fully operational while backend refinement is underway. 
 
-You can check out the demo here: https://finfriend-your-financial-chatbot.streamlit.app/
+## Demo: https://finfriend-your-financial-chatbot.streamlit.app/
 <img width="1222" alt="Screenshot 2025-04-27 at 9 37 13 PM" src="https://github.com/user-attachments/assets/91e0fa45-f71b-4561-a19b-6491c0ba9e28" />
 
 ## Scenario
