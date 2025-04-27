@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import streamlit as st
 import tweepy
 
-REDDIT_HEADERS = {"User-Agent": "finfriend-bot"}
+REDDIT_HEADERS = {"User-Agent": "finfriend-bot/1.0 (by u/Imaginary-Weird-7959)"}
 NEWSAPI_KEY = st.secrets.get("NEWS_API_KEY")
 TWITTER_BEARER_TOKEN = st.secrets.get("TWITTER_BEARER_TOKEN")
 
