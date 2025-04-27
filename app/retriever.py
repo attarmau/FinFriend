@@ -6,7 +6,7 @@ import streamlit as st
 import tweepy
 
 REDDIT_CLIENT_ID = st.secrets.get("REDDIT_CLIENT_ID")
-REDDIT_CLIENT_SECRET = st.secrets.get("REDDIT_SECRET")
+REDDIT_CLIENT_SECRET = st.secrets.get("REDDIT_CLIENT_SECRET")
 NEWSAPI_KEY = st.secrets.get("NEWS_API_KEY")
 TWITTER_BEARER_TOKEN = st.secrets.get("TWITTER_BEARER_TOKEN")
 
