@@ -1,0 +1,7 @@
+langchain
+openai
+requests
+streamlit
+tiktoken
+yfinance
+tweepy

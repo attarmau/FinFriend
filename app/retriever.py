@@ -1,0 +1,147 @@
+import os
+import requests
+import yfinance as yf
+from datetime import datetime, timedelta
+import time
+import streamlit as st
+import tweepy
+
+REDDIT_CLIENT_ID = st.secrets.get("REDDIT_CLIENT_ID")
+REDDIT_CLIENT_SECRET = st.secrets.get("REDDIT_CLIENT_SECRET")
+NEWSAPI_KEY = st.secrets.get("NEWS_API_KEY")
+TWITTER_BEARER_TOKEN = st.secrets.get("TWITTER_BEARER_TOKEN")
+
+REDDIT_USER_AGENT = "finfriend-bot/1.0 (by u/Imaginary-Weird-7959)"
+
+def fetch_with_retry(url, retries=3, backoff_factor=2, headers=None, data=None, auth=None):
+    attempt = 0
+    while attempt < retries:
+        try:
+            response = requests.get(url, headers=headers, data=data, auth=auth)
+            print(f"Attempt {attempt + 1}: URL: {url} | Status Code: {response.status_code}")
+            if response.status_code == 429:  
+                print(f"Rate limit exceeded. Retrying... (Attempt {attempt + 1})")
+                raise Exception("Rate limit exceeded. Retrying...")
+            response.raise_for_status() 
+            return response
+        except Exception as e:
+            attempt += 1
+            print(f"Attempt {attempt} failed: {e}")
+            if attempt < retries:
+                backoff_time = backoff_factor ** attempt 
+                print(f"Retrying in {backoff_time} seconds...")
+                time.sleep(backoff_time)
+            else:
+                print(f"All {retries} retry attempts failed for URL: {url}")
+                raise Exception(f"All {retries} retry attempts failed. Last error: {e}")
+
+def choose_ticker(user_question):
+    question = user_question.lower()
+    if "apple" in question or "aapl" in question:
+        return "AAPL"
+    elif "tesla" in question or "tsla" in question:
+        return "TSLA"
+    elif "microsoft" in question or "msft" in question:
+        return "MSFT"
+    elif "amazon" in question or "amzn" in question:
+        return "AMZN"
+    elif "inflation" in question or "economy" in question:
+        return "^GSPC" 
+    else:
+        return None
+
+def fetch_reddit_posts(subreddit="investing", limit=5):
+    """
+    Fetches hot posts from a specified Reddit subreddit. 
+    Useful for gathering community sentiment and discussions on specific stocks or the economy.
+    """
+    if not REDDIT_CLIENT_ID or not REDDIT_CLIENT_SECRET:
+        raise ValueError("Missing REDDIT_CLIENT_ID or REDDIT_CLIENT_SECRET in secrets.toml.")
+    
+    auth = requests.auth.HTTPBasicAuth(REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET)
+    data = {"grant_type": "client_credentials"}
+    headers = {"User-Agent": REDDIT_USER_AGENT}
+    
+    try:
+        token_res = requests.post("https://www.reddit.com/api/v1/access_token", auth=auth, data=data, headers=headers)
+        token_res.raise_for_status() 
+        token = token_res.json().get("access_token")
+        headers["Authorization"] = f"bearer {token}"  
+    except requests.exceptions.HTTPError as err:
+        print(f"HTTP error occurred: {err}")  
+        raise Exception(f"Failed to get Reddit token: {err}")
+    except Exception as e:
+        print(f"Error occurred: {e}")
+        raise Exception(f"Failed to get Reddit token: {e}")
+
+    try:
+        url = f"https://oauth.reddit.com/r/{subreddit}/hot?limit={limit}"
+        res = fetch_with_retry(url, retries=3, headers=headers)
+        posts = res.json().get("data", {}).get("children", [])
+    except Exception as e:
+        print(f"Error fetching Reddit posts: {e}")
+        raise Exception(f"Error fetching Reddit posts: {e}")
+    
+    return [f"[Reddit] {p['data']['title']}\n{p['data']['selftext']}" for p in posts]
+
+
+def fetch_news_articles(query="stocks", page_size=5):
+    """
+    Fetches the latest financial news articles matching a query.
+    Useful for finding specific news, events, or general market updates.
+    """
+    if not NEWSAPI_KEY:
+        raise ValueError("Missing NEWS_API_KEY in secrets.toml or environment variables.")
+    url = f"https://newsapi.org/v2/everything?q={query}&pageSize={page_size}&apiKey={NEWSAPI_KEY}"
+    
+    res = fetch_with_retry(url, retries=3)
+    articles = res.json().get("articles", [])
+    
+    return [f"[News] {a['title']}\n{a['description']}" for a in articles if a.get("description")]
+
+def fetch_yahoo_finance_data(ticker, days=5):
+    """
+    Fetches historical stock price data for a given ticker symbol over the last few days.
+    Useful for checking the performance, open, and close prices of a specific stock.
+    Example tickers: AAPL, TSLA, MSFT, AMZN, ^GSPC.
+    """
+    end = datetime.today()
+    start = end - timedelta(days=days + 2)
+    yf_ticker = ticker.replace("^", "%5E") if ticker.startswith("^") else ticker
+    
+    try:
+        df = yf.download(yf_ticker, start=start, end=end, progress=False, auto_adjust=True)
+        if df.empty:
+            print(f"No data found for {ticker}.")
+            return []
+        return [
+            f"[Yahoo Finance] {ticker} | {row.name.date()} | Open: {row.Open:.2f}, Close: {row.Close:.2f}"
+            for _, row in df.iterrows()
+        ]
+    except Exception as e:
+        print(f"Error fetching Yahoo Finance data: {e}")
+        return []
+
+def fetch_twitter_finance_posts(query="finance OR stock market OR bitcoin OR investment", max_results=10):
+    """
+    Fetches recent tweets related to finance, stocks, or a specific query from Twitter.
+    Useful for real-time sentiment analysis and trending topics.
+    """
+    if not TWITTER_BEARER_TOKEN:
+        raise ValueError("Missing TWITTER_BEARER_TOKEN in secrets.toml or environment variables.")
+    
+    client = tweepy.Client(bearer_token=TWITTER_BEARER_TOKEN)
+    
+    try:
+        tweets = client.search_recent_tweets(query=query + " -is:retweet lang:en", max_results=max_results)
+    except Exception as e:
+        print(f"Error fetching Twitter posts: {e}")
+        return []
+    
+    if not tweets.data:
+        return []
+    
+    return [f"[Twitter] {tweet.text}" for tweet in tweets.data]
+
+
+
